@@ -106,10 +106,11 @@ static const u8 def_control_mpage[CONTROL_MPAGE_LEN] = {
 };
 
 static const char *ata_lpm_policy_names[] = {
-	[ATA_LPM_UNKNOWN]	= "max_performance",
-	[ATA_LPM_MAX_POWER]	= "max_performance",
-	[ATA_LPM_MED_POWER]	= "medium_power",
-	[ATA_LPM_MIN_POWER]	= "min_power",
+	[ATA_LPM_UNKNOWN]		= "max_performance",
+	[ATA_LPM_MAX_POWER]		= "max_performance",
+	[ATA_LPM_MED_POWER]		= "medium_power",
+	[ATA_LPM_MED_POWER_WITH_DIPM]	= "med_power_with_dipm",
+	[ATA_LPM_MIN_POWER]		= "min_power",
 };
 
 static ssize_t ata_scsi_lpm_store(struct device *device,
@@ -176,7 +177,7 @@ static ssize_t ata_scsi_park_show(struct device *device,
 	struct ata_link *link;
 	struct ata_device *dev;
 	unsigned long now;
-	unsigned int uninitialized_var(msecs);
+	unsigned int msecs;
 	int rc = 0;
 
 	ap = ata_shost_to_port(sdev->host);
@@ -4562,7 +4563,7 @@ void ata_scsi_simulate(struct ata_device *dev, struct scsi_cmnd *cmd)
 		break;
 
 	case MAINTENANCE_IN:
-		if (scsicmd[1] == MI_REPORT_SUPPORTED_OPERATION_CODES)
+		if ((scsicmd[1] & 0x1f) == MI_REPORT_SUPPORTED_OPERATION_CODES)
 			ata_scsi_rbuf_fill(&args, ata_scsiop_maint_in);
 		else
 			ata_scsi_set_invalid_field(dev, cmd, 1, 0xff);

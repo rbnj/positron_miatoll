@@ -51,7 +51,7 @@ static int ashmem_open(struct inode *inode, struct file *file)
 	int ret;
 
 	ret = generic_file_open(inode, file);
-	if (unlikely(ret))
+	if (ret)
 		return ret;
 
 	asma = kmem_cache_alloc(ashmem_area_cachep, GFP_KERNEL);
